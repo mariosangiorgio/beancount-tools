@@ -10,12 +10,24 @@ def convert_date(date):
   tokens = date.split("/")
   return f"{tokens[2]}-{tokens[1]}-{tokens[0]}"
 
-category_map = {}
-unmapped_categories = set()
+def load_category_map(category_map_file):
+  """
+  Loads mapping between payees (as repored in the statement) and
+  expenses categories.
+  The input file is expected to be a csv with payees in the first
+  column and categories in the second.
 
-with open('category-map.csv') as csvfile:
-  for mapping in csv.reader(csvfile, delimiter=',', quotechar='"', skipinitialspace=True):
-    category_map[mapping[0]] = mapping[1]
+  E.g.
+  "OysterCard", "Expenses:PublicTransport"
+  """
+  category_map = {}
+  with open(category_map_file) as csvfile:
+    for mapping in csv.reader(csvfile, delimiter=',', quotechar='"', skipinitialspace=True):
+      category_map[mapping[0]] = mapping[1]
+  return category_map
+
+category_map = load_category_map('category-map.csv')
+unmapped_categories = set()
 
 with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
   transactions = csv.reader(csvfile, delimiter=',', quotechar='"', )
