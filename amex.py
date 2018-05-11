@@ -14,7 +14,7 @@ category_map = {}
 unmapped_categories = set()
 
 with open('category-map.csv') as csvfile:
-  for mapping in csv.reader(csvfile, delimiter=',', quotechar='"', skipinitialspace=true):
+  for mapping in csv.reader(csvfile, delimiter=',', quotechar='"', skipinitialspace=True):
     category_map[mapping[0]] = mapping[1]
 
 with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
@@ -28,8 +28,8 @@ with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
       continue
     if payee in category_map:
       print(f'{convert_date(date)} * "{payee}" "Automatically converted"')
-      print(f'  Liabilities:AmericanExpress {amount} GBP')
-      print(f'  {category_map[payee]}')
+      print(f'  {category_map[payee]} {amount} GBP')
+      print(f'  Liabilities:AmericanExpress')
       print()
     else:
       unmapped_categories.add(payee)
