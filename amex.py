@@ -26,26 +26,27 @@ def load_category_map(category_map_file):
       category_map[mapping[0]] = mapping[1]
   return category_map
 
-category_map = load_category_map('category-map.csv')
-unmapped_categories = set()
+if __name__ == "__main__":
+  category_map = load_category_map('category-map.csv')
+  unmapped_categories = set()
 
-with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
-  transactions = csv.reader(csvfile, delimiter=',', quotechar='"', )
-  for transaction in transactions:
-    date = transaction[0]
-    amount = transaction[2]
-    payee = transaction[3]
-    if payee == 'PAYMENT RECEIVED - THANK YOU':
-      # Ignoring, I'll add this entry when reconciling other accounts
-      continue
-    if payee in category_map:
-      print(f'{convert_date(date)} * "{payee}" "Automatically converted"')
-      print(f'  {category_map[payee]} {amount} GBP')
-      print(f'  Liabilities:AmericanExpress')
-      print()
-    else:
-      unmapped_categories.add(payee)
-if unmapped_categories:
-  print("Some categories have not been mapped")
-  for category in unmapped_categories:
-    print(f'"{category}"')
+  with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
+    transactions = csv.reader(csvfile, delimiter=',', quotechar='"', )
+    for transaction in transactions:
+      date = transaction[0]
+      amount = transaction[2]
+      payee = transaction[3]
+      if payee == 'PAYMENT RECEIVED - THANK YOU':
+        # Ignoring, I'll add this entry when reconciling other accounts
+        continue
+      if payee in category_map:
+        print(f'{convert_date(date)} * "{payee}" "Automatically converted"')
+        print(f'  {category_map[payee]} {amount} GBP')
+        print(f'  Liabilities:AmericanExpress')
+        print()
+      else:
+        unmapped_categories.add(payee)
+  if unmapped_categories:
+    print("Some categories have not been mapped")
+    for category in unmapped_categories:
+      print(f'"{category}"')
