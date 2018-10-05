@@ -1,7 +1,8 @@
 #!/usr/local/bin/python3
 import csv
-import os
+import json
 import argparse
+from collections import defaultdict
 
 def convert_date(date):
   """
@@ -16,16 +17,19 @@ def load_category_map(category_map_file):
   """
   Loads mapping between payees (as repored in the statement) and
   expenses categories.
-  The input file is expected to be a csv with payees in the first
-  column and categories in the second.
+  The input file is expected to be a json file with categories as
+  keys and payees as values.
 
   E.g.
-  "OysterCard", "Expenses:PublicTransport"
+  {
+    "Expenses:PublicTransport": ["OysterCard"]
+  }
   """
   category_map = {}
-  with open(category_map_file) as csvfile:
-    for mapping in csv.reader(csvfile, delimiter=',', quotechar='"', skipinitialspace=True):
-      category_map[mapping[0]] = mapping[1]
+  with open(category_map_file) as f:
+    for (category, payees) in json.loads(f.read()).items():
+      for payee in payees:
+        category_map[payee] = category
   return category_map
 
 if __name__ == "__main__":
@@ -39,7 +43,7 @@ if __name__ == "__main__":
   category_map = load_category_map(args.category_map)
   unmapped_categories = set()
 
-  with open(os.path.expanduser(args.data)) as csvfile:
+  with open(args.data) as csvfile:
     transactions = csv.reader(csvfile, delimiter=',', quotechar='"', )
     for transaction in transactions:
       date = transaction[0]
