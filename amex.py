@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 import csv
 import os
+import argparse
 
 def convert_date(date):
   """
@@ -28,10 +29,17 @@ def load_category_map(category_map_file):
   return category_map
 
 if __name__ == "__main__":
-  category_map = load_category_map('category-map.csv')
+  parser = argparse.ArgumentParser(
+    description='Converts a csv file downloaded from American Express to ' +
+                'a list of beancount entries.')
+  parser.add_argument('-c', '--category_map', type=str, help='The category map file')
+  parser.add_argument('-d', '--data', type=str, help='The ofx.csv file')
+
+  args = parser.parse_args()
+  category_map = load_category_map(args.category_map)
   unmapped_categories = set()
 
-  with open(os.path.expanduser('~/Downloads/ofx.csv')) as csvfile:
+  with open(os.path.expanduser(args.data)) as csvfile:
     transactions = csv.reader(csvfile, delimiter=',', quotechar='"', )
     for transaction in transactions:
       date = transaction[0]
